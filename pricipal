@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos de Amazon</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <div id="products-container"></div>
+
+    <script>
+        $(document).ready(function() {
+            // Configuración de la solicitud a la API de Amazon
+            const accessKey = 'TU_ACCESS_KEY'; // Reemplaza con tu Access Key
+            const secretKey = 'TU_SECRET_KEY'; // Reemplaza con tu Secret Key
+            const associateTag = 'TU_ASSOCIATE_TAG'; // Reemplaza con tu Associate Tag
+            const keywords = 'libros'; // Palabras clave de búsqueda (puedes cambiarlo)
+
+            const requestURL = `https://webservices.amazon.com/paapi5/searchitems?Keywords=${keywords}&Operation=SearchItems&SearchIndex=All&Service=AWSECommerceService&AssociateTag=${associateTag}`;
+
+            // Realizar la solicitud a la API de Amazon
+            $.ajax({
+                url: requestURL,
+                headers: {
+                    'Authorization': `Bearer ${accessKey}:${secretKey}`
+                },
+                success: function(data) {
+                    const products = data.SearchResult.Items;
+                    const productsContainer = document.getElementById('products-container');
+
+                    // Mostrar los productos
+                    products.forEach(function(product) {
+                        const productDiv = document.createElement('div');
+                        const title = product.Title;
+                        const imageURL = product.Images[0].URL;
+
+                        productDiv.innerHTML = `
+                            <h3>${title}</h3>
+                            <img src="${imageURL}" alt="${title}" style="max-width: 200px;">
+                        `;
+                        productsContainer.appendChild(productDiv);
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error(error);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
